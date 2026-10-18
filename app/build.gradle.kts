@@ -89,8 +89,8 @@ dependencies {
     // Extractor marks Protobuf as runtime-only; its generated message APIs need
     // the same pinned superclasses on the deterministic test compile classpath.
     androidTestImplementation("com.google.protobuf:protobuf-javalite:4.35.1")
-    // AndroidX Test references these annotations but omits their artifact from
-    // its published POM. Supply them when R8 optimizes the release test APK.
-    androidTestImplementation("com.google.errorprone:error_prone_annotations:2.30.0")
+    // AndroidX Test omits its CLASS-retained Error Prone annotations from the
+    // published POM. R8 needs their definitions; they are not runtime code.
+    androidTestCompileOnly("com.google.errorprone:error_prone_annotations:2.30.0")
 }
 kotlin { compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17) } }
