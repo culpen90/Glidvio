@@ -179,7 +179,7 @@ class LivePlaybackTest {
                 visibleText = nodes.mapNotNull { it.text?.toString() }.joinToString(" | ").take(1_000)
                 for (node in nodes.filter { it.text?.toString() == "Undo" }) {
                     if (!node.isVisibleToUser) {
-                        node.performAction(AccessibilityNodeInfo.ACTION_SHOW_ON_SCREEN)
+                        node.performAction(AccessibilityNodeInfo.AccessibilityAction.ACTION_SHOW_ON_SCREEN.id)
                     }
                     var target: AccessibilityNodeInfo? = node
                     repeat(4) {
