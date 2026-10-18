@@ -20,10 +20,14 @@ import com.glidvio.app.sponsor.SkipWindow
 import kotlinx.coroutines.runBlocking
 import okhttp3.Request
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.net.URLDecoder
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 /** Manual, network-dependent smoke tests against YouTube and SponsorBlock. No responses are mocked. */
 @RunWith(AndroidJUnit4::class)
@@ -33,6 +37,14 @@ class LivePlaybackTest {
 
     @Test(timeout = 180_000)
     fun liveSearchAndPagination(): Unit = runBlocking {
+        // The test and target APKs share the desugared java.net classes on older
+        // Android releases. Exercise the same Charset overload used by Extractor
+        // search so the test APK supplies its complete encoding API as well.
+        val queryWithReservedCharacters = "Big Buck Bunny + café & Android"
+        val encodedQuery = URLEncoder.encode(queryWithReservedCharacters, StandardCharsets.UTF_8)
+        assertEquals("Big+Buck+Bunny+%2B+caf%C3%A9+%26+Android", encodedQuery)
+        assertEquals(queryWithReservedCharacters, URLDecoder.decode(encodedQuery, StandardCharsets.UTF_8))
+
         val repository = YouTubeRepository()
         val first = repository.search("Big Buck Bunny")
         assertTrue("YouTube should return real videos", first.items.isNotEmpty())

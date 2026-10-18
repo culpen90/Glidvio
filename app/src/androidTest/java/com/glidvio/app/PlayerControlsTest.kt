@@ -43,7 +43,9 @@ class PlayerControlsTest {
                 scenario.onActivity { it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT }
                 awaitState(scenario, "initial moving decoded video", 90_000) { activity ->
                     val player = activity.activePlayer
-                    player != null && player.playbackState == Player.STATE_READY && player.isPlaying &&
+                    activity.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT &&
+                        !activity.isInPictureInPictureMode && !activity.pip &&
+                        player != null && player.playbackState == Player.STATE_READY && player.isPlaying &&
                         player.currentPosition >= 1_000 && player.videoSize.width > 0
                 }
 
@@ -160,11 +162,14 @@ class PlayerControlsTest {
         var status = "No active accessibility window"
         while (SystemClock.elapsedRealtime() < deadline) {
             val root = automation.rootInActiveWindow
-            if (root != null) {
+            if (root != null && root.refresh()) {
                 val nodes = mutableListOf(root)
                 var index = 0
                 while (index < nodes.size) {
                     val node = nodes[index++]
+                    // Android 8 can retain cached descriptions across rotation.
+                    // Refresh each node before using its label or child snapshot.
+                    node.refresh()
                     for (child in 0 until node.childCount) node.getChild(child)?.let(nodes::add)
                 }
                 status = nodes.mapNotNull { it.contentDescription?.toString() ?: it.text?.toString() }.joinToString(" | ").take(1_500)
