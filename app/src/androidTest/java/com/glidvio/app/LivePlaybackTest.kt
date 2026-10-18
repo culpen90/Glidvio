@@ -174,10 +174,13 @@ class LivePlaybackTest {
         var visibleText = "No accessibility window"
         while (SystemClock.elapsedRealtime() < deadline) {
             val root = automation.rootInActiveWindow
-            if (root != null) {
+            if (root != null && root.refresh()) {
                 val nodes = accessibilityNodes(root)
                 visibleText = nodes.mapNotNull { it.text?.toString() }.joinToString(" | ").take(1_000)
                 for (node in nodes.filter { it.text?.toString() == "Undo" }) {
+                    if (!node.isVisibleToUser) {
+                        node.performAction(AccessibilityNodeInfo.ACTION_SHOW_ON_SCREEN)
+                    }
                     var target: AccessibilityNodeInfo? = node
                     repeat(4) {
                         val candidate = target
@@ -234,6 +237,7 @@ class LivePlaybackTest {
         var index = 0
         while (index < nodes.size) {
             val node = nodes[index++]
+            node.refresh()
             for (childIndex in 0 until node.childCount) node.getChild(childIndex)?.let(nodes::add)
         }
         return nodes
