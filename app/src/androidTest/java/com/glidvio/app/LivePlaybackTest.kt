@@ -43,7 +43,9 @@ class LivePlaybackTest {
         val queryWithReservedCharacters = "Big Buck Bunny + café & Android"
         val encodedQuery = URLEncoder.encode(queryWithReservedCharacters, StandardCharsets.UTF_8)
         assertEquals("Big+Buck+Bunny+%2B+caf%C3%A9+%26+Android", encodedQuery)
+        assertEquals(encodedQuery, URLEncoder.encode(queryWithReservedCharacters, "UTF-8"))
         assertEquals(queryWithReservedCharacters, URLDecoder.decode(encodedQuery, StandardCharsets.UTF_8))
+        assertEquals(queryWithReservedCharacters, URLDecoder.decode(encodedQuery, "UTF-8"))
 
         val repository = YouTubeRepository()
         val first = repository.search("Big Buck Bunny")
