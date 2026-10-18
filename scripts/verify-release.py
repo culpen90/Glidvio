@@ -50,7 +50,7 @@ if "application-debuggable" in badging or "application-testOnly" in badging:
 manifest = run(tools / "aapt2", "dump", "xmltree", apk, "--file", "AndroidManifest.xml")
 if re.search(r"android:(?:debuggable|testOnly)\([^\n]*\)=\(type 0x12\)0xffffffff", manifest):
     raise SystemExit("The manifest enables a debug/test-only flag.")
-if "sdkVersion:'26'" not in badging:
+if not re.search(r"^(?:minSdkVersion|sdkVersion):'26'$", badging, re.MULTILINE):
     raise SystemExit("Unexpected minimum SDK; update and review release requirements.")
 pem = re.search(r"-----BEGIN CERTIFICATE-----.*?-----END CERTIFICATE-----", certificates, re.DOTALL)
 fingerprint = re.search(r"Signer #1 certificate SHA-256 digest: ([0-9a-fA-F]+)", certificates)
