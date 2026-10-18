@@ -35,6 +35,6 @@ sealed interface SponsorLoadResult {
     /** An empty list means the service has no matching community submissions. */
     data class Available(val segments: List<Segment>) : SponsorLoadResult
 
-    /** Distinct from no submissions: playback can continue with a visible warning. */
+    /** Distinct from no submissions: protected playback waits for a successful retry. */
     data class Unavailable(val message: String, val httpStatus: Int? = null) : SponsorLoadResult
 }

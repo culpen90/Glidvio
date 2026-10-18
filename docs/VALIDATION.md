@@ -1,4 +1,14 @@
-# Glidvio 0.1.0 validation
+# Glidvio validation
+
+## Public release evidence
+
+The exact public APK's source commit, checksum, signing certificate fingerprint, build checks, and observed device-test results are recorded in `ReleaseValidation.json` attached to [each GitHub release](https://github.com/culpen90/Glidvio/releases). `SHA256SUMS` identifies the downloadable APK bytes. The historical development build below uses a different signing certificate and is not evidence that the production artifact passed.
+
+Production verification uses the optimized, resource-shrunk release variant, not a debug APK. The release instrumentation suite includes seven tests: real YouTube search/pagination, direct video/audio bytes, decoded playback, SponsorBlock seeks/boundary crossing/Undo, fullscreen/PiP/saving, and deterministic Rhino/protobuf runtime checks after optimization. See [RELEASING.md](RELEASING.md) for the build, signing, installation, and publication gates. Live tests depend on YouTube and SponsorBlock availability.
+
+Validation targets include the Android 8.0/API 26 minimum and an Android 16/API 36 emulator configured for 16 KiB pages. Only devices and passing checks explicitly recorded in the release's validation asset are claimed as tested. The private release key is retained outside the repository; its public certificate is committed in `signing/release-certificate.pem`.
+
+# Development build 0.1.0 (historical)
 
 Verified on 2026-10-18 using JDK 21, Gradle 8.13, and a physical Android device (SM-S938U, Android 17 / API 37).
 

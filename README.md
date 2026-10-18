@@ -2,6 +2,18 @@
 
 An Android YouTube viewer with ad-free native playback and automatic skipping of community-reported sponsor segments. Built with Kotlin, Jetpack Compose, Media3, [NewPipe Extractor](https://github.com/TeamNewPipe/NewPipeExtractor/tree/v0.26.5), and [SponsorBlock](https://sponsor.ajay.app/).
 
+## Download and install
+
+**[Download Glidvio.apk](https://github.com/culpen90/Glidvio/releases/latest/download/Glidvio.apk)** · [Release notes and checksums](https://github.com/culpen90/Glidvio/releases/latest)
+
+1. Download `Glidvio.apk` on an Android 8.0 or newer phone or tablet.
+2. Open the download. If Android asks, allow your browser or file manager to install unknown apps, then return to the installer.
+3. Choose **Install**. You can turn off that source's installation permission afterward.
+
+The release is a signed, optimized universal APK; no account or separate architecture download is needed. Releases include `SHA256SUMS` and the public signing certificate, `Glidvio-signing-certificate.pem`. Future official APKs use the same release key so Android can install updates over the existing release.
+
+**Earlier development installs:** the original `0.1.0` debug APK used the same package name with a different signing certificate. Android cannot update that install to the public release in place. Uninstalling it erases its local saved videos, history, and settings, so preserve anything you need before choosing to uninstall it. New development builds use `com.glidvio.app.debug` and can coexist with the public app.
+
 ## Ads and sponsors
 
 Glidvio resolves video content streams with the pinned NewPipe Extractor `v0.26.5` and plays them directly through Media3. It has no embedded YouTube player or advertising SDK and does not request or insert YouTube advertising breaks.
@@ -46,7 +58,7 @@ APK output:
 app/build/outputs/apk/debug/app-debug.apk
 ```
 
-The debug APK uses a development signing certificate. To install on a selected emulator or an authorized USB/wireless debugging device:
+The debug APK uses the development package `com.glidvio.app.debug` and a development signing certificate. To install on a selected emulator or an authorized USB/wireless debugging device:
 
 ```sh
 adb devices -l
@@ -55,6 +67,8 @@ adb -s "$ANDROID_SERIAL" install -r app/build/outputs/apk/debug/app-debug.apk
 ```
 
 With wireless debugging, complete Android's pairing/connect flow first, then use the connected serial displayed by `adb devices -l`.
+
+For a signed release build, key custody, verification, and publication steps, see [RELEASING.md](docs/RELEASING.md). The repository's Android workflow compiles and checks the release variant without access to the private release key; it does not publish an installable APK.
 
 ## Live verification
 

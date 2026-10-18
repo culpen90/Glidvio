@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.glidvio.app.AppModel
+import com.glidvio.app.BuildConfig
 import com.glidvio.app.MainActivity
 import com.glidvio.app.sponsor.SponsorCategory
 
@@ -113,7 +114,7 @@ private fun SettingsDialog(model: AppModel, onDismiss: () -> Unit) {
                 HorizontalDivider()
                 Text("Your saved videos and history stay on this device. No account is needed.", style = MaterialTheme.typography.bodySmall)
                 TextButton(onClick = model::clearHistory) { Text("Clear watch history") }
-                Text("Glidvio 0.1.0 · GPL-3.0-or-later", style = MaterialTheme.typography.labelSmall)
+                Text("Glidvio ${BuildConfig.VERSION_NAME} · GPL-3.0-or-later", style = MaterialTheme.typography.labelSmall)
                 Text("Uses NewPipe Extractor (GPL-3.0-or-later) and SponsorBlock data (CC BY-NC-SA 4.0).", style = MaterialTheme.typography.bodySmall)
                 TextButton(onClick = { licenses = true }) { Text("Open-source licenses") }
                 TextButton(onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://sponsor.ajay.app/"))) }) { Text("SponsorBlock · community credits") }

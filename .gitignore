@@ -4,5 +4,10 @@
 local.properties
 *.jks
 *.keystore
+*.p12
+release-signing.properties
+keystore.properties
+.env
+.env.*
 .DS_Store
 artifacts/
