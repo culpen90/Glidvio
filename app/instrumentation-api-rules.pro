@@ -8,11 +8,56 @@
 # Method bodies and the rest of the app/dependencies remain optimizable.
 # Update these entries when instrumentation starts calling an additional API.
 
+# AndroidX Test's independently optimized Kotlin framework code also calls the
+# shared standard library through its public ABI (for example LazyKt.lazy).
+# Preserve that ABI, including public facade methods on nonpublic declaring
+# classes, so app shrinking cannot break callers packaged in the test APK.
+# Method bodies remain eligible for optimization and unrelated libraries keep
+# their normal shrinking behavior.
+-keep,allowoptimization class kotlin.** {
+    public *;
+    protected *;
+}
+
 # AndroidJUnitRunner/AndroidXTracer call these shared tracing entry points.
 -keep,allowoptimization class androidx.tracing.Trace {
     public static void beginSection(java.lang.String);
     public static void endSection();
     public static void forceEnableAppTracing();
+}
+
+# AndroidX Test 1.7/1.8 also calls these shared futures/coroutine APIs from its
+# UiAutomation helpers. These are exact references in the pinned test AARs;
+# retain callable entries without retaining those libraries' entire ABI.
+-keep,allowoptimization class androidx.concurrent.futures.CallbackToFutureAdapter {
+    public static com.google.common.util.concurrent.ListenableFuture getFuture(androidx.concurrent.futures.CallbackToFutureAdapter$Resolver);
+}
+-keep,allowoptimization class androidx.concurrent.futures.CallbackToFutureAdapter$Completer {
+    public boolean set(java.lang.Object);
+    public boolean setException(java.lang.Throwable);
+}
+-keep,allowoptimization interface com.google.common.util.concurrent.ListenableFuture {
+    public void addListener(java.lang.Runnable, java.util.concurrent.Executor);
+}
+-keep,allowoptimization class kotlinx.coroutines.BuildersKt {
+    public static java.lang.Object runBlocking(kotlin.coroutines.CoroutineContext, kotlin.jvm.functions.Function2);
+}
+-keep,allowoptimization interface kotlinx.coroutines.CancellableContinuation {
+    public void resume(java.lang.Object, kotlin.jvm.functions.Function1);
+}
+-keep,allowoptimization class kotlinx.coroutines.CancellableContinuationImpl {
+    public <init>(kotlin.coroutines.Continuation, int);
+    public java.lang.Object getResult();
+    public void initCancellability();
+}
+-keep,allowoptimization class kotlinx.coroutines.Dispatchers {
+    public static kotlinx.coroutines.MainCoroutineDispatcher getMain();
+}
+-keep,allowoptimization class kotlinx.coroutines.ExecutorsKt {
+    public static kotlinx.coroutines.CoroutineDispatcher from(java.util.concurrent.Executor);
+}
+-keep,allowoptimization class kotlinx.coroutines.TimeoutKt {
+    public static java.lang.Object withTimeout-KLykuaI(long, kotlin.jvm.functions.Function2, kotlin.coroutines.Continuation);
 }
 
 # XTags inherits the serialization method exercised by the known-wire test.
