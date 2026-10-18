@@ -64,6 +64,12 @@ if fingerprint[1].lower() != trusted_digest:
     raise SystemExit("The APK signer does not match the established public release certificate.")
 
 with zipfile.ZipFile(apk) as archive:
+    revision = run("git", "-C", root, "rev-parse", "HEAD").strip()
+    if run("git", "-C", root, "status", "--porcelain", "--untracked-files=all").strip():
+        raise SystemExit("Commit the reviewed source before staging an official release.")
+    metadata = archive.read("META-INF/version-control-info.textproto").decode()
+    if f'revision: "{revision}"' not in metadata:
+        raise SystemExit("The APK source revision does not match the checked-out commit.")
     for asset, source in (("LICENSE.txt", "LICENSE"), ("THIRD_PARTY_NOTICES.txt", "THIRD_PARTY_NOTICES.md")):
         if archive.read(f"assets/{asset}") != (root / source).read_bytes():
             raise SystemExit(f"Packaged license does not match source: {asset}")

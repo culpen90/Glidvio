@@ -41,7 +41,7 @@ The release script requires signing credentials and fails instead of producing a
 - `SHA256SUMS` (the APK's SHA-256 hash)
 - `Glidvio-signing-certificate.pem`
 
-`GLIDVIO_RELEASE_OUTPUT` can select an alternate staging directory. The verifier checks APK signatures against the established public certificate, ZIP/native-library alignment, the production package, non-debuggable status, minimum SDK, and bundled license contents. It also requires the APK's version code and name to match `app/build.gradle.kts`, preventing staging a stale version. It prints the APK hash and signing certificate fingerprint. Preserve the exact APK that passed validation for upload. Rebuilding with a different toolchain, dependency state, or signing identity is not a claim of byte-for-byte reproducibility.
+`GLIDVIO_RELEASE_OUTPUT` can select an alternate staging directory. The verifier checks APK signatures against the established public certificate, ZIP/native-library alignment, the production package, non-debuggable status, minimum SDK, and bundled license contents. It also requires the APK's version code and name to match `app/build.gradle.kts`, a clean Git checkout, and its embedded source revision to match the checked-out commit, preventing staging a stale build. It prints the APK hash and signing certificate fingerprint. Preserve the exact APK that passed validation for upload. Rebuilding with a different toolchain, dependency state, or signing identity is not a claim of byte-for-byte reproducibility.
 
 For source checks without the private key:
 
