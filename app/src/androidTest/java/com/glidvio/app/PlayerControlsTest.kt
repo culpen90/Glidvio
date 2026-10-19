@@ -7,6 +7,7 @@ import android.content.res.Configuration
 import android.net.Uri
 import android.os.SystemClock
 import android.view.accessibility.AccessibilityNodeInfo
+import androidx.media3.common.C
 import androidx.media3.common.Player
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -47,6 +48,18 @@ class PlayerControlsTest {
                         !activity.isInPictureInPictureMode && !activity.pip &&
                         player != null && player.playbackState == Player.STATE_READY && player.isPlaying &&
                         player.currentPosition >= 1_000 && player.videoSize.width > 0
+                }
+
+                // Optional emulator diagnosis: keep the normal audio path by
+                // default, but allow a controlled video-only lifecycle run when
+                // a virtual device's audio HAL cannot consume PCM output.
+                if (InstrumentationRegistry.getArguments().getString("glidvio.disableControlAudio") == "true") {
+                    scenario.onActivity { activity ->
+                        val player = activity.activePlayer ?: throw AssertionError("Player disappeared before the audio-HAL control")
+                        player.trackSelectionParameters = player.trackSelectionParameters.buildUpon()
+                            .setTrackTypeDisabled(C.TRACK_TYPE_AUDIO, true)
+                            .build()
+                    }
                 }
 
                 lateinit var originalActivity: MainActivity
@@ -140,7 +153,9 @@ class PlayerControlsTest {
                 val player = activity.activePlayer
                 assertTrue("$label: player error ${player?.playerError}", player?.playerError == null)
                 status = "orientation=${activity.resources.configuration.orientation}, pip=${activity.isInPictureInPictureMode}/${activity.pip}, " +
-                    "state=${player?.playbackState}, playing=${player?.isPlaying}, position=${player?.currentPosition}ms, video=${player?.videoSize}"
+                    "state=${player?.playbackState}, playing=${player?.isPlaying}, playWhenReady=${player?.playWhenReady}, " +
+                    "suppression=${player?.playbackSuppressionReason}, position=${player?.currentPosition}ms, " +
+                    "contentBuffered=${player?.contentBufferedPosition}ms, totalBuffered=${player?.totalBufferedDuration}ms, video=${player?.videoSize}"
                 matches = predicate(activity)
             }
             if (matches) return

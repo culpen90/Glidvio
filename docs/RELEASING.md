@@ -64,6 +64,8 @@ The release instrumentation variant can be selected with:
 ANDROID_SERIAL='selected-device-serial' ./gradlew -Pglidvio.testBuildType=release :app:connectedReleaseAndroidTest
 ```
 
+Some headless Android 16/16 KiB emulator images have a broken virtual audio output: ranchu PCM writes fail and the audio clock stalls. Diagnose that environment with `-Pandroid.testInstrumentationRunnerArguments.glidvio.disableControlAudio=true`. This flag disables audio only during the player-controls test, after initial normal playback; other media tests still exercise video and audio extraction. Record this condition explicitly when reporting results. It does not change the APK or replace normal-audio validation on a working device.
+
 This installs and launches the app and can interrupt the device's current activity. Select a device you are authorized to use. A fresh install avoids overwriting a development install; Android rejects an update if its existing package has a different signing certificate. Do not uninstall an existing installation without preserving any data the user needs.
 
 After validating the final signed `app/build/outputs/apk/release/app-release.apk`, verify and stage it again **without rebuilding**:
